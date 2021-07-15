@@ -1,5 +1,5 @@
 # SuperRadio
-Internet / Local Radio plugin for OMSI 2
+Internet ~~/ Local Radio~~ plugin for OMSI 2
 
 # Variables:<br>
 `Snd_Radio` Standard radio operation without changing the volume (`legacyvolume`) and without changing the channel (`TAPE`).<br>
