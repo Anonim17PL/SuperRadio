@@ -1,0 +1,54 @@
+{trigger:KR_VOL_drag}
+	(L.S.mouse_x) -500 / (L.L.SndVol_Radio) + 0 max 1 min (S.L.SndVol_Radio)
+{end}
+
+{trigger:KR_1}
+	(L.L.SndExt_Radio) 0 >
+	{if}
+		1 (S.L.SndExt_Radio)
+	{endif}
+{end}
+
+{trigger:KR_2}
+	(L.L.SndExt_Radio) 0 >
+	{if}
+		2 (S.L.SndExt_Radio)
+	{endif}
+{end}
+
+{trigger:KR_3}
+	(L.L.SndExt_Radio) 0 >
+	{if}
+		3 (S.L.SndExt_Radio)
+	{endif}
+{end}
+
+{trigger:KR_4}
+	(L.L.SndExt_Radio) 0 >
+	{if}
+		4 (S.L.SndExt_Radio)
+	{endif}
+{end}
+
+{trigger:KR_5}
+	(L.L.SndExt_Radio) 0 >
+	{if}
+		5 (S.L.SndExt_Radio)
+	{endif}
+{end}
+
+{trigger:KR_6}
+	(L.L.SndExt_Radio) 0 >
+	{if}
+		6 (S.L.SndExt_Radio)
+	{endif}
+{end}
+
+{trigger:KR_OFF}
+	(L.L.SndExt_Radio) 0 >
+	{if}
+		0 (S.L.SndExt_Radio)
+	{else}
+		1 (S.L.SndExt_Radio)
+	{endif}
+{end}
