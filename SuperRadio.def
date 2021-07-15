@@ -1,0 +1,10 @@
+LIBRARY SuperRadio.dll
+
+
+EXPORTS
+PluginStart
+AccessVariable
+AccessStringVariable
+AccessTrigger
+AccessSystemVariable
+PluginFinalize
