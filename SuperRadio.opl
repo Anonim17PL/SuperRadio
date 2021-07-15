@@ -1,0 +1,24 @@
+Rename this file to SuperRadio.opl
+
+[dll]
+SuperRadio.dll
+
+[varlist]
+3
+Snd_Radio
+SndExt_Radio
+SndVol_Radio
+
+
+[Radio]
+TAPE=https://rs201-krk-cyfronet.rmfstream.pl/RMFFM48
+CH1=https://rs201-krk-cyfronet.rmfstream.pl/RMFFM48
+CH2=http://radio.modules.pl:8500/
+CH3=https://radiostream.pl/tuba100-1.mp3
+CH4=https://pl2-play.adtonos.com/zote-przeboje
+CH5=https://radiomaryja.fastcast4u.com/proxy/radiomaryja?mp=/1
+CH6=NONE
+CH7=NONE
+CH8=NONE
+CH9=NONE
+legacyvolume=0.15
