@@ -8,6 +8,6 @@ Internet ~~/ Local~~ Radio plugin for OMSI 2
 `SndVol_Radio` Change the volume in the extended radio operation (0-1) (Above 1.0, the volume is amplified)<br>
 
 
-> Attention! For SuperRadio plugin you need Microsoft Visual C ++ Redistributable for Visual Studio 2015, 2017 and 2019!
-> X86 processors: https://aka.ms/vs/16/release/vc_redist.x86.exe
-> X64 processors: https://aka.ms/vs/16/release/vc_redist.x64.exe
+> Attention! For SuperRadio plugin you need Microsoft Visual C ++ Redistributable for Visual Studio 2015, 2017 and 2019!<br>
+> X86 processors: https://aka.ms/vs/16/release/vc_redist.x86.exe <br>
+> X64 processors: https://aka.ms/vs/16/release/vc_redist.x64.exe <br>
