@@ -9,5 +9,5 @@ Internet ~~/ Local~~ Radio plugin for OMSI 2
 
 
 > Attention! For SuperRadio plugin you need Microsoft Visual C ++ Redistributable for Visual Studio 2015, 2017 and 2019!<br>
-> X86 processors: https://aka.ms/vs/16/release/vc_redist.x86.exe <br>
-> X64 processors: https://aka.ms/vs/16/release/vc_redist.x64.exe <br>
+> https://aka.ms/vs/16/release/vc_redist.x86.exe <br>
+> https://aka.ms/vs/16/release/vc_redist.x64.exe <br>
