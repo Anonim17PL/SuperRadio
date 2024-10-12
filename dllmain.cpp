@@ -1,5 +1,4 @@
 ﻿// dllmain.cpp : Definiuje punkt wejścia dla aplikacji DLL.
-#include "pch.h"
 #include <iostream>
 #include "bass.h"
 #include "SimpleIni/SimpleIni.h"
