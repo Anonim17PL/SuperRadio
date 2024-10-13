@@ -29,7 +29,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
 string CH[10];
 float legacyvolume, valprevvol;
-float val[999];
+float val[10];
 int started, legacy, valprev;
 HSTREAM streamprev;
 
@@ -81,6 +81,27 @@ std::wstring decode(const std::string& str, int codePage = GetACP())
 	std::wstring wstrTo(size_needed, 0);
 	MultiByteToWideChar(codePage, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
 	return wstrTo;
+}
+
+bool abortthread = false;
+HANDLE mainth;
+
+DWORD WINAPI MainThread(LPVOID lpParam)
+{
+	while (!abortthread) {
+
+	}
+}
+
+void stopAudio() {
+	abortthread = true;
+	WaitForSingleObject(mainth, 2000);
+	CloseHandle(mainth);
+}
+
+void startAudio() {
+	abortthread = false;
+	mainth = CreateThread(NULL, 0, MainThread, NULL, 0, NULL);
 }
 
 	void __stdcall PluginStart(void* aOwner)
