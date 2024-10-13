@@ -1,54 +1,96 @@
+'##############
+'SuperRadio Example Script
+'##############
+
+'(c) 13.10.2024 Anonim17PL
+
+'Script Version: 2.0
+'Plugin Version: BETA 1 and above
+'Omsi release: 2.0 and above
+'Triggers: KR_x (from 1 to 9) - Selecting an internet radio station
+'          KR_VOL - Volume slider/knob. Volume from 0% to 200%. Mouse cursor movement on X axis (horizontal)
+'          KR_POWER - Power button.
+' Variables:
+' SndExt_Radio, SndVol_Radio - Plugin specific
+' KR_channel - The selected channel
+' 
+
 {trigger:KR_VOL_drag}
-	(L.S.mouse_x) -500 / (L.L.SndVol_Radio) + 0 max 1 min (S.L.SndVol_Radio)
+	(L.S.mouse_x) -500 / (L.L.SndVol_Radio) + 0 max 2 min (S.L.SndVol_Radio)
 {end}
+
+' Channel selection is only possible after turning on the radio.
 
 {trigger:KR_1}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		1 (S.L.SndExt_Radio)
+		1 (S.L.KR_channel)
 	{endif}
 {end}
 
 {trigger:KR_2}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		2 (S.L.SndExt_Radio)
+		2 (S.L.KR_channel)
 	{endif}
 {end}
 
 {trigger:KR_3}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		3 (S.L.SndExt_Radio)
+		3 (S.L.KR_channel)
 	{endif}
 {end}
 
 {trigger:KR_4}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		4 (S.L.SndExt_Radio)
+		4 (S.L.KR_channel)
 	{endif}
 {end}
 
 {trigger:KR_5}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		5 (S.L.SndExt_Radio)
+		5 (S.L.KR_channel)
 	{endif}
 {end}
 
 {trigger:KR_6}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		6 (S.L.SndExt_Radio)
+		6 (S.L.KR_channel)
 	{endif}
 {end}
 
-{trigger:KR_OFF}
+{trigger:KR_7}
 	(L.L.SndExt_Radio) 0 >
 	{if}
+		7 (S.L.KR_channel)
+	{endif}
+{end}
+
+{trigger:KR_8}
+	(L.L.SndExt_Radio) 0 >
+	{if}
+		8 (S.L.KR_channel)
+	{endif}
+{end}
+
+{trigger:KR_9}
+	(L.L.SndExt_Radio) 0 >
+	{if}
+		9 (S.L.KR_channel)
+	{endif}
+{end}
+
+{trigger:KR_POWER}
+	(L.L.SndExt_Radio) 0 >
+	{if}
+' Power off
 		0 (S.L.SndExt_Radio)
 	{else}
-		1 (S.L.SndExt_Radio)
+' Read the last selected channel number.
+		(L.L.KR_channel) (S.L.SndExt_Radio)
 	{endif}
 {end}
