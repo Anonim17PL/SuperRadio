@@ -1,9 +1,0 @@
-﻿  dllmain.cpp
-Z:\bak\repos\Anonim17PL\SuperRadio\dllmain.cpp(51,22): warning C4244: "=": konwersja z "double" do "float", możliwa utrata danych
-Z:\bak\repos\Anonim17PL\SuperRadio\dllmain.cpp(103,74): warning C4244: "=": konwersja z "float" do "int", możliwa utrata danych
-  ConvertUTF.c
-  Trwa generowanie kodu
-  Previous IPDB not found, fall back to full compilation.
-  All 37 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  Zakończono generowanie kodu
-  SuperRadio.vcxproj -> Z:\bak\Repos\Anonim17PL\SuperRadio\Release\SuperRadio.dll
