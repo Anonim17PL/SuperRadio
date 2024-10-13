@@ -113,7 +113,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>bass.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>bass.lib;basshls.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>SuperRadio.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -147,20 +147,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Library Include="bass.lib" />
+    <Library Include="basshls.lib" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bass.dll" />
+    <None Include="basshls.dll" />
     <None Include="SuperRadio.def" />
     <None Include="SuperRadio.opl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bass.h" />
+    <ClInclude Include="basshls.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SimpleIni\ConvertUTF.h" />
     <ClInclude Include="SimpleIni\SimpleIni.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="SimpleIni\ConvertUTF.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SuperRadio.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

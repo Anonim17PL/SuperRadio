@@ -1,6 +1,7 @@
 ﻿// dllmain.cpp : Definiuje punkt wejścia dla aplikacji DLL.
 #include <iostream>
 #include "bass.h"
+#include "basshls.h"
 #include "SimpleIni/SimpleIni.h"
 #include "SimpleIni/ConvertUTF.h"
 #include <codecvt>
@@ -8,8 +9,8 @@
 using namespace std;
 
 // HLS definitions (copied from BASSHLS.H)
-#define BASS_SYNC_HLS_SEGMENT	0x10300
-#define BASS_TAG_HLS_EXTINF		0x14000
+//#define BASS_SYNC_HLS_SEGMENT	0x10300
+//#define BASS_TAG_HLS_EXTINF		0x14000
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -30,7 +31,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 string CH[10];
 float legacyvolume, valprevvol;
 float val[10];
-int started, legacy, valprev;
+int started, legacy, valprev, tapemode;
 HSTREAM streamprev;
 
 void loadconfigfile() {
@@ -56,9 +57,18 @@ void loadconfigfile() {
 
 
 
-void play_music(char* URL, float volume) {
+void play_music(char* URL, float volume, bool local = false) {
 	BASS_ChannelStop(streamprev);
-	HSTREAM stream = BASS_StreamCreateURL(URL, 0, 0, NULL, 0);
+	HSTREAM stream = NULL;
+	if (local)
+		stream = BASS_HLS_StreamCreateFile(false, URL, 0, 0, BASS_STREAM_AUTOFREE);
+	else {
+		stream = BASS_StreamCreateURL(URL, 0, BASS_STREAM_AUTOFREE, NULL, NULL);
+		if (stream == 0) {
+			if (BASS_ErrorGetCode() == BASS_ERROR_FILEFORM)
+				stream = BASS_HLS_StreamCreateURL(URL, BASS_STREAM_AUTOFREE, NULL, NULL);
+		}
+	}
 	streamprev = stream;
 	BASS_ChannelSetAttribute(stream, BASS_ATTRIB_VOL, volume);
 	BASS_ChannelPlay(stream, 1);
@@ -104,6 +114,11 @@ void startAudio() {
 	mainth = CreateThread(NULL, 0, MainThread, NULL, 0, NULL);
 }
 
+void CALLBACK SyncPos(HSYNC handle, DWORD channel, DWORD data, void* user)
+{
+	//val[4] = BASS_ChannelGetTags(streamprev, BASS_SYNC_HLS_SEGMENT);
+}
+
 	void __stdcall PluginStart(void* aOwner)
 	{
 		loadconfigfile();
@@ -120,16 +135,23 @@ void startAudio() {
 			BASS_ChannelSetAttribute(streamprev, BASS_ATTRIB_VOL, val[2]);
 		}
 
-		if (val[0] < 1 && val[1] < 1 || val[1] != valprev) {
+		if (val[0] < 1 && val[1] < 1 || val[1] != valprev || val[3] != tapemode) {
 			BASS_ChannelStop(streamprev); started = 0; legacy = 0; valprev = val[1];
 		}else {
 			if (val[0] == 1 && started == 0) {
 				legacy = 1;
+				tapemode = 0;
 				play_music((char*)CH[0].c_str(),legacyvolume);
 			}
-			else if (val[1] >= 1 && started == 0) {
+			else if (val[1] >= 1 && started == 0 && val[3] == 0) {
 				legacy = 0;
+				tapemode = 0;
 				play_music((char*)CH[(int)val[1]].c_str(), val[2]);
+			}
+			else if (val[3] >= 1 && started == 0) {
+				legacy = 0;
+				tapemode = 1;
+				play_music((char*)CH[0].c_str(), val[2],true);
 			}
 		}
 

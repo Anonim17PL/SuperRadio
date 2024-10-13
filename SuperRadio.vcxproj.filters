@@ -18,6 +18,9 @@
     <Library Include="bass.lib">
       <Filter>Pliki zasobów</Filter>
     </Library>
+    <Library Include="basshls.lib">
+      <Filter>Pliki zasobów</Filter>
+    </Library>
   </ItemGroup>
   <ItemGroup>
     <None Include="bass.dll">
@@ -27,6 +30,9 @@
       <Filter>Pliki zasobów</Filter>
     </None>
     <None Include="SuperRadio.opl">
+      <Filter>Pliki zasobów</Filter>
+    </None>
+    <None Include="basshls.dll">
       <Filter>Pliki zasobów</Filter>
     </None>
   </ItemGroup>
@@ -40,6 +46,12 @@
     <ClInclude Include="SimpleIni\SimpleIni.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="basshls.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SimpleIni\ConvertUTF.c">
@@ -48,5 +60,10 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SuperRadio.rc">
+      <Filter>Pliki zasobów</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
