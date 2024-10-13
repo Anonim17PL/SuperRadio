@@ -4,29 +4,9 @@
 #include "basshls.h"
 #include "SimpleIni/SimpleIni.h"
 #include "SimpleIni/ConvertUTF.h"
-#include <codecvt>
-#include <vector>
 using namespace std;
 
-// HLS definitions (copied from BASSHLS.H)
-//#define BASS_SYNC_HLS_SEGMENT	0x10300
-//#define BASS_TAG_HLS_EXTINF		0x14000
-
-BOOL APIENTRY DllMain( HMODULE hModule,
-                       DWORD  ul_reason_for_call,
-                       LPVOID lpReserved
-                     )
-{
-    switch (ul_reason_for_call)
-    {
-    case DLL_PROCESS_ATTACH:
-    case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
-    case DLL_PROCESS_DETACH:
-        break;
-    }
-    return TRUE;
-}
+#pragma warning(disable:4996)
 
 string CH[10];
 float legacyvolume, valprevvol;
@@ -56,14 +36,33 @@ void loadconfigfile() {
 }
 
 
+wchar_t* chartow(const char* str, int codePage = GetACP())
+{
+	int size_needed = MultiByteToWideChar(codePage, 0, str, (int)sizeof(str), NULL, 0);
+	wchar_t *wstrTo = new wchar_t[size_needed];
+	MultiByteToWideChar(codePage, 0, str, (int)sizeof(str), wstrTo, size_needed);
+	return wstrTo;
+}
 
 void play_music(char* URL, float volume, bool local = false) {
 	BASS_ChannelStop(streamprev);
 	HSTREAM stream = NULL;
-	if (local)
-		stream = BASS_HLS_StreamCreateFile(false, URL, 0, 0, BASS_STREAM_AUTOFREE);
-	else {
+	if (local) {
+		/*
+		stream = BASS_StreamCreateFile(false, URL, 0, 0, BASS_STREAM_AUTOFREE);
+#ifdef _DEBUG
+		cout << "Local" << endl;
+		cout << URL << endl;
+		if (stream == 0) {
+			cout << BASS_ErrorGetCode() << endl;
+		}
+#endif
+*/
+	} else {
 		stream = BASS_StreamCreateURL(URL, 0, BASS_STREAM_AUTOFREE, NULL, NULL);
+#ifdef _DEBUG
+		cout << URL << endl;
+#endif
 		if (stream == 0) {
 			if (BASS_ErrorGetCode() == BASS_ERROR_FILEFORM)
 				stream = BASS_HLS_StreamCreateURL(URL, BASS_STREAM_AUTOFREE, NULL, NULL);
@@ -75,54 +74,14 @@ void play_music(char* URL, float volume, bool local = false) {
 	started = 1;
 }
 
-std::string encode(const std::wstring& wstr, int codePage = GetACP())
-{
-	if (wstr.empty()) return std::string();
-	int size_needed = WideCharToMultiByte(codePage, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
-	std::string strTo(size_needed, 0);
-	WideCharToMultiByte(codePage, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
-	return strTo;
-}
-
-std::wstring decode(const std::string& str, int codePage = GetACP())
-{
-	if (str.empty()) return std::wstring();
-	int size_needed = MultiByteToWideChar(codePage, 0, &str[0], (int)str.size(), NULL, 0);
-	std::wstring wstrTo(size_needed, 0);
-	MultiByteToWideChar(codePage, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
-	return wstrTo;
-}
-
-bool abortthread = false;
-HANDLE mainth;
-
-DWORD WINAPI MainThread(LPVOID lpParam)
-{
-	while (!abortthread) {
-
-	}
-}
-
-void stopAudio() {
-	abortthread = true;
-	WaitForSingleObject(mainth, 2000);
-	CloseHandle(mainth);
-}
-
-void startAudio() {
-	abortthread = false;
-	mainth = CreateThread(NULL, 0, MainThread, NULL, 0, NULL);
-}
-
-void CALLBACK SyncPos(HSYNC handle, DWORD channel, DWORD data, void* user)
-{
-	//val[4] = BASS_ChannelGetTags(streamprev, BASS_SYNC_HLS_SEGMENT);
-}
-
 	void __stdcall PluginStart(void* aOwner)
 	{
 		loadconfigfile();
 		BASS_Init(-1, 44100, 0, 0, NULL);
+#ifdef _DEBUG
+		AllocConsole();
+		freopen("CONOUT$", "w", stdout);
+#endif
 	}
 
 
@@ -136,21 +95,32 @@ void CALLBACK SyncPos(HSYNC handle, DWORD channel, DWORD data, void* user)
 		}
 
 		if (val[0] < 1 && val[1] < 1 || val[1] != valprev || val[3] != tapemode) {
-			BASS_ChannelStop(streamprev); started = 0; legacy = 0; valprev = val[1];
+#ifdef _DEBUG
+			if(started)
+				cout << "Channel stopped" << endl;
+#endif
+			BASS_ChannelStop(streamprev); started = 0; legacy = 0; valprev = val[1]; tapemode = val[3];
 		}else {
 			if (val[0] == 1 && started == 0) {
 				legacy = 1;
 				tapemode = 0;
 				play_music((char*)CH[0].c_str(),legacyvolume);
+#ifdef _DEBUG
+				cout << "Channel started (legacy mode)" << endl;
+#endif
 			}
-			else if (val[1] >= 1 && started == 0 && val[3] == 0) {
+			else if (val[1] >= 1 && started == 0 && tapemode < 1) {
 				legacy = 0;
-				tapemode = 0;
 				play_music((char*)CH[(int)val[1]].c_str(), val[2]);
+#ifdef _DEBUG
+				cout << "Channel started" << endl;
+#endif
 			}
-			else if (val[3] >= 1 && started == 0) {
+			else if (val[1] >= 1 && val[3] >= 1 && tapemode >= 1) {
 				legacy = 0;
-				tapemode = 1;
+#ifdef _DEBUG
+				//cout << "Tapemode enabled" << endl;
+#endif
 				play_music((char*)CH[0].c_str(), val[2],true);
 			}
 		}
@@ -175,5 +145,7 @@ void CALLBACK SyncPos(HSYNC handle, DWORD channel, DWORD data, void* user)
 
 	void __stdcall PluginFinalize()
 	{
-
+#ifdef _DEBUG
+		FreeConsole();
+#endif
 	}
