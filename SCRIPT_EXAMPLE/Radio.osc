@@ -90,7 +90,7 @@
 ' Power off
 		0 (S.L.SndExt_Radio)
 	{else}
-' Read the last selected channel number.
-		(L.L.KR_channel) (S.L.SndExt_Radio)
+' Set to last selected channel
+		(L.L.KR_channel) 1 max (S.L.SndExt_Radio)
 	{endif}
 {end}
