@@ -24,63 +24,63 @@
 {trigger:KR_1}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		1 (S.L.KR_channel)
+		1 (S.L.KR_channel) (S.L.SndExt_Radio)
 	{endif}
 {end}
 
 {trigger:KR_2}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		2 (S.L.KR_channel)
+		2 (S.L.KR_channel) (S.L.SndExt_Radio)
 	{endif}
 {end}
 
 {trigger:KR_3}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		3 (S.L.KR_channel)
+		3 (S.L.KR_channel) (S.L.SndExt_Radio)
 	{endif}
 {end}
 
 {trigger:KR_4}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		4 (S.L.KR_channel)
+		4 (S.L.KR_channel) (S.L.SndExt_Radio)
 	{endif}
 {end}
 
 {trigger:KR_5}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		5 (S.L.KR_channel)
+		5 (S.L.KR_channel) (S.L.SndExt_Radio)
 	{endif}
 {end}
 
 {trigger:KR_6}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		6 (S.L.KR_channel)
+		6 (S.L.KR_channel) (S.L.SndExt_Radio)
 	{endif}
 {end}
 
 {trigger:KR_7}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		7 (S.L.KR_channel)
+		7 (S.L.KR_channel) (S.L.SndExt_Radio)
 	{endif}
 {end}
 
 {trigger:KR_8}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		8 (S.L.KR_channel)
+		8 (S.L.KR_channel) (S.L.SndExt_Radio)
 	{endif}
 {end}
 
 {trigger:KR_9}
 	(L.L.SndExt_Radio) 0 >
 	{if}
-		9 (S.L.KR_channel)
+		9 (S.L.KR_channel) (S.L.SndExt_Radio)
 	{endif}
 {end}
 
