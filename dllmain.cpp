@@ -74,10 +74,10 @@ void play_music(char* URL, float volume, bool local = false) {
 	started = 1;
 }
 
-	void __stdcall PluginStart(void* aOwner)
+	void __stdcall PluginStart(HWND aOwner)
 	{
 		loadconfigfile();
-		BASS_Init(-1, 44100, 0, 0, NULL);
+		BASS_Init(-1, 44100, 0, aOwner, NULL);
 #ifdef _DEBUG
 		AllocConsole();
 		freopen("CONOUT$", "w", stdout);
@@ -99,7 +99,8 @@ void play_music(char* URL, float volume, bool local = false) {
 			if(started)
 				cout << "Channel stopped" << endl;
 #endif
-			BASS_ChannelStop(streamprev); started = 0; legacy = 0; valprev = val[1]; tapemode = val[3];
+			if (started)
+				BASS_ChannelStop(streamprev); started = 0; legacy = 0; valprev = val[1]; tapemode = val[3];
 		}else {
 			if (val[0] == 1 && started == 0) {
 				legacy = 1;
