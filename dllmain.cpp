@@ -4,37 +4,71 @@
 #include "basshls.h"
 #include "SimpleIni/SimpleIni.h"
 #include "SimpleIni/ConvertUTF.h"
+#include <sstream>
+#include <thread>
 using namespace std;
 
 #pragma warning(disable:4996)
 
-string CH[10];
-float legacyvolume, valprevvol;
-float val[10];
-int started, legacy, valprev, tapemode;
-HSTREAM streamprev;
+string* CH;
+size_t CH_count;
+float val[3];
+float volume, legacyvolume;
+int state;
+HSTREAM BASSstream;
+bool threadstop;
+
+
+#ifdef _DEBUG
+const bool debugmode = true;
+#else
+	bool debugmode;
+#endif
+
+void printDebug(string str) {
+	if (debugmode == true)
+		cout << str << endl;
+}
+
+void initConsole() {
+	AllocConsole();
+	freopen("CONOUT$", "w", stdout);
+	SetConsoleTitle(L"SuperRadio Debug Log");
+}
+
 
 void loadconfigfile() {
 	CSimpleIniA ini;
 	ini.SetUnicode();
 	SI_Error rc = ini.LoadFile(".\\plugins\\SuperRadio.opl");
 	if (rc >= 0) {
-		CH[0] = ini.GetValue("Radio", "TAPE");
-		CH[1] = ini.GetValue("Radio", "CH1");
-		CH[2] = ini.GetValue("Radio", "CH2");
-		CH[3] = ini.GetValue("Radio", "CH3");
-		CH[4] = ini.GetValue("Radio", "CH4");
-		CH[5] = ini.GetValue("Radio", "CH5");
-		CH[6] = ini.GetValue("Radio", "CH6");
-		CH[7] = ini.GetValue("Radio", "CH7");
-		CH[8] = ini.GetValue("Radio", "CH8");
-		CH[9] = ini.GetValue("Radio", "CH9");
-		legacyvolume = atof(ini.GetValue("Radio", "legacyvolume"));
+		const char* CH_countS = ini.GetValue("Radio", "CHcount", "9");
+		CH_count = atoi(CH_countS);
+
+		CH = new string[CH_count+1];
+		
+		CH[0] = ini.GetValue("Radio", "TAPE", "NONE");
+		legacyvolume = atof(ini.GetValue("Radio", "legacyvolume","0.15"));
+#ifndef _DEBUG
+		debugmode = ini.GetBoolValue("Radio", "debugmode",false);
+		if (debugmode)
+			initConsole();
+#endif
+
+		for (int i = 1; i <= CH_count; i++) {
+			stringstream chstr;
+			chstr << "CH";
+			chstr << i;
+			CH[i] = ini.GetValue("Radio", chstr.str().c_str(),"NONE");
+		}
+		stringstream counts;
+		counts << "Loaded URLs: ";
+		counts << CH_countS;
+		printDebug(counts.str());
 	}
 
 
 }
-
 
 wchar_t* chartow(const char* str, int codePage = GetACP())
 {
@@ -44,109 +78,123 @@ wchar_t* chartow(const char* str, int codePage = GetACP())
 	return wstrTo;
 }
 
-void play_music(char* URL, float volume, bool local = false) {
-	BASS_ChannelStop(streamprev);
-	HSTREAM stream = NULL;
-	if (local) {
-		/*
-		stream = BASS_StreamCreateFile(false, URL, 0, 0, BASS_STREAM_AUTOFREE);
+void __stdcall PluginStart(HWND aOwner)
+{
 #ifdef _DEBUG
-		cout << "Local" << endl;
-		cout << URL << endl;
-		if (stream == 0) {
-			cout << BASS_ErrorGetCode() << endl;
-		}
+	initConsole();
 #endif
-*/
-	} else {
-		stream = BASS_StreamCreateURL(URL, 0, BASS_STREAM_AUTOFREE, NULL, NULL);
-#ifdef _DEBUG
-		cout << URL << endl;
-#endif
-		if (stream == 0) {
-			if (BASS_ErrorGetCode() == BASS_ERROR_FILEFORM)
-				stream = BASS_HLS_StreamCreateURL(URL, BASS_STREAM_AUTOFREE, NULL, NULL);
-		}
-	}
-	streamprev = stream;
-	BASS_ChannelSetAttribute(stream, BASS_ATTRIB_VOL, volume);
-	BASS_ChannelPlay(stream, 1);
-	started = 1;
+	bool ok = BASS_Init(-1, 44100, 0, aOwner, NULL);
+	if (!ok) {
+		stringstream i;
+		i << "Fail to init BASS. Error Code: ";
+		i << BASS_ErrorGetCode();
+		printDebug(i.str());
+	}else
+		printDebug("BASS library loaded successfully");
+	loadconfigfile();
+
 }
 
-	void __stdcall PluginStart(HWND aOwner)
-	{
-		loadconfigfile();
-		BASS_Init(-1, 44100, 0, aOwner, NULL);
-#ifdef _DEBUG
-		AllocConsole();
-		freopen("CONOUT$", "w", stdout);
-#endif
+void StopMusic() {
+	if (state != 0) {
+		BASS_ChannelStop(BASSstream);
+		BASS_StreamFree(BASSstream);
+		state = 0;
+		printDebug("Channel stopped");
+	}
+}
+
+void PlayURL(string URL) {
+	if (URL == "NONE")
+		return;
+	BASSstream = BASS_StreamCreateURL(URL.c_str(), 0, BASS_STREAM_AUTOFREE, NULL, NULL);
+
+	if (state > 0)
+		printDebug(CH[state]);
+	else
+		printDebug(CH[0]);
+
+	if (BASS_ErrorGetCode() != 0) {
+		printDebug("Fail, retry in HLS mode");
+		BASSstream = BASS_HLS_StreamCreateURL(URL.c_str(), BASS_STREAM_AUTOFREE, NULL, NULL);
+	}
+	if (BASS_ErrorGetCode() != 0)
+		printDebug("Fail, channel not started");
+	else
+		BASS_ChannelPlay(BASSstream, true);
+}
+
+void StartMusic() {
+	if (state == -1) {
+		PlayURL(CH[0]);
+		BASS_ChannelSetAttribute(BASSstream, BASS_ATTRIB_VOL, legacyvolume);
+		printDebug("Channel started (legacy mode)");
+	}
+	else if (state > 0) {
+		PlayURL(CH[state]);
+		BASS_ChannelSetAttribute(BASSstream, BASS_ATTRIB_VOL, volume);
+		printDebug("Channel started");
+	}
+}
+
+void musicSwitcher()
+{
+
+	if (val[2] != volume) {
+		volume = val[2];
+		BASS_ChannelSetAttribute(BASSstream, BASS_ATTRIB_VOL, volume);
 	}
 
+	float state_tapemode = val[0];
+	int state_chx = min(val[1],CH_count);
 
-	void __stdcall AccessVariable(unsigned short varindex, float* value, bool* write)
-	{
-		val[varindex] = (float)*value;
-		
-		if (val[2] != valprevvol) {
-			valprevvol = val[2];
-			BASS_ChannelSetAttribute(streamprev, BASS_ATTRIB_VOL, val[2]);
-		}
+	if (state_tapemode > 0)
+		state_chx = -1;
 
-		if (val[0] < 1 && val[1] < 1 || val[1] != valprev || val[3] != tapemode) {
-#ifdef _DEBUG
-			if(started)
-				cout << "Channel stopped" << endl;
-#endif
-			if (started)
-				BASS_ChannelStop(streamprev); started = 0; legacy = 0; valprev = val[1]; tapemode = val[3];
-		}else {
-			if (val[0] == 1 && started == 0) {
-				legacy = 1;
-				tapemode = 0;
-				play_music((char*)CH[0].c_str(),legacyvolume);
-#ifdef _DEBUG
-				cout << "Channel started (legacy mode)" << endl;
-#endif
-			}
-			else if (val[1] >= 1 && started == 0 && tapemode < 1) {
-				legacy = 0;
-				play_music((char*)CH[(int)val[1]].c_str(), val[2]);
-#ifdef _DEBUG
-				cout << "Channel started" << endl;
-#endif
-			}
-			else if (val[1] >= 1 && val[3] >= 1 && tapemode >= 1) {
-				legacy = 0;
-#ifdef _DEBUG
-				//cout << "Tapemode enabled" << endl;
-#endif
-				play_music((char*)CH[0].c_str(), val[2],true);
-			}
-		}
-
+	if (state_chx != state) {
+		StopMusic();
+		state = state_chx;
+		StartMusic();
 	}
+}
 
-	void __stdcall AccessStringVariable(unsigned short varindex, wchar_t* value, bool* write)
-	{
-	}
-
-	void __stdcall AccessTrigger(unsigned short triggerindex, bool* active)
-	{
-
-	}
-
-	void __stdcall AccessSystemVariable(unsigned short varindex, float* value, bool* write)
-	{
-
-	}
+void musicThread() {
+	while (!threadstop)
+		musicSwitcher();
+}
 
 
+void __stdcall AccessVariable(unsigned short varindex, float* value, bool* write)
+{
+	val[varindex] = (float)*value;
+}
 
-	void __stdcall PluginFinalize()
-	{
+
+void __stdcall AccessStringVariable(unsigned short varindex, wchar_t* value, bool* write)
+{
+}
+
+void __stdcall AccessTrigger(unsigned short triggerindex, bool* active)
+{
+
+}
+
+void __stdcall AccessSystemVariable(unsigned short varindex, float* value, bool* write)
+{
+
+}
+
+
+std::thread mth(musicThread);
+
+void __stdcall PluginFinalize()
+{
+	threadstop = true;
+	mth.join();
+	StopMusic();
+	BASS_Free();
+	delete[] CH;
 #ifdef _DEBUG
-		FreeConsole();
+	FreeConsole();
 #endif
-	}
+}
