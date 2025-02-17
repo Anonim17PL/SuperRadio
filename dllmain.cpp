@@ -139,9 +139,9 @@ void StartMusic() {
 
 void musicSwitcher()
 {
-
-	if (val[2] != volume) {
-		volume = val[2];
+	float prevvol = val[2];
+	if (prevvol != volume) {
+		volume = prevvol;
 		BASS_ChannelSetAttribute(BASSstream, BASS_ATTRIB_VOL, volume);
 	}
 

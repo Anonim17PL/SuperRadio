@@ -51,13 +51,13 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,0,3,0
- PRODUCTVERSION 0,0,3,0
+ FILEVERSION 0,0,3,1
+ PRODUCTVERSION 0,0,3,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
- FILEFLAGS 0x23L
+ FILEFLAGS 0x7L
 #else
- FILEFLAGS 0x22L
+ FILEFLAGS 0x6L
 #endif
  FILEOS 0x40004L
  FILETYPE 0x2L
@@ -69,12 +69,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Anonim17PL"
             VALUE "FileDescription", "SuperRadio plugin for OMSI"
-            VALUE "FileVersion", "0.0.3.0"
+            VALUE "FileVersion", "0.0.3.1"
             VALUE "InternalName", "SuperRadio.dll"
-            VALUE "LegalCopyright", "Copyright (C) 2024 Anonim17PL"
+            VALUE "LegalCopyright", "Copyright (C) 2025 Anonim17PL"
             VALUE "OriginalFilename", "SuperRadio.dll"
             VALUE "ProductName", "SuperRadio"
-            VALUE "ProductVersion", "0.0.3.0"
+            VALUE "ProductVersion", "0.0.3.1"
         END
     END
     BLOCK "VarFileInfo"
