@@ -2,95 +2,81 @@
 'SuperRadio Example Script
 '##############
 
-'(c) 13.10.2024 Anonim17PL
+'(c) 2024-2025 Anonim17PL
 
-'Script Version: 2.0
-'Plugin Version: BETA 1 and above
-'Omsi release: 2.0 and above
-'Triggers: KR_x (from 1 to 9) - Selecting an internet radio station
+'Script Version: 3.0
+'Plugin Version: 0.0.4 and above
+'OMSI release: 2.0 and above
+'Triggers:
+'          KR_1 ... KR_9 - Selecting an internet radio station
 '          KR_VOL - Volume slider/knob. Volume from 0% to 200%. Mouse cursor movement on X axis (horizontal)
-'          KR_POWER - Power button.
+'          KR_POWER - Power button
+'          KR_REW - Previous song in playlist
+'          KR_FF - Next song in playlist
 ' Variables:
-' SndExt_Radio, SndVol_Radio - Plugin specific
-' KR_channel - The selected channel
-' 
+'          SndExt_Radio, SndVol_Radio, SndExt_RadioPlaylist - Plugin specific
+'          KR_Channel - The selected channel
+'          KR_Power - Radio enabled
+' Macros:
+'          Radio_frame - Main radio script loop
 
 {trigger:KR_VOL_drag}
 	(L.S.mouse_x) -500 / (L.L.SndVol_Radio) + 0 max 2 min (S.L.SndVol_Radio)
 {end}
 
-' Channel selection is only possible after turning on the radio.
-
 {trigger:KR_1}
-	(L.L.SndExt_Radio) 0 >
-	{if}
-		1 (S.L.KR_channel) (S.L.SndExt_Radio)
-	{endif}
+	1 (S.L.KR_Channel)
 {end}
 
 {trigger:KR_2}
-	(L.L.SndExt_Radio) 0 >
-	{if}
-		2 (S.L.KR_channel) (S.L.SndExt_Radio)
-	{endif}
+	2 (S.L.KR_Channel)
 {end}
 
 {trigger:KR_3}
-	(L.L.SndExt_Radio) 0 >
-	{if}
-		3 (S.L.KR_channel) (S.L.SndExt_Radio)
-	{endif}
+	3 (S.L.KR_Channel)
 {end}
 
 {trigger:KR_4}
-	(L.L.SndExt_Radio) 0 >
-	{if}
-		4 (S.L.KR_channel) (S.L.SndExt_Radio)
-	{endif}
+	4 (S.L.KR_Channel)
 {end}
 
 {trigger:KR_5}
-	(L.L.SndExt_Radio) 0 >
-	{if}
-		5 (S.L.KR_channel) (S.L.SndExt_Radio)
-	{endif}
+	5 (S.L.KR_Channel)
 {end}
 
 {trigger:KR_6}
-	(L.L.SndExt_Radio) 0 >
-	{if}
-		6 (S.L.KR_channel) (S.L.SndExt_Radio)
-	{endif}
+	6 (S.L.KR_Channel)
 {end}
 
 {trigger:KR_7}
-	(L.L.SndExt_Radio) 0 >
-	{if}
-		7 (S.L.KR_channel) (S.L.SndExt_Radio)
-	{endif}
+	7 (S.L.KR_Channel)
 {end}
 
 {trigger:KR_8}
-	(L.L.SndExt_Radio) 0 >
-	{if}
-		8 (S.L.KR_channel) (S.L.SndExt_Radio)
-	{endif}
+	8 (S.L.KR_Channel)
 {end}
 
 {trigger:KR_9}
-	(L.L.SndExt_Radio) 0 >
-	{if}
-		9 (S.L.KR_channel) (S.L.SndExt_Radio)
-	{endif}
+	9 (S.L.KR_Channel)
 {end}
 
 {trigger:KR_POWER}
-	(L.L.SndExt_Radio) 0 >
+	(L.L.KR_Power) ! (S.L.KR_Power)
+{end}
+
+{trigger:KR_REW}
+	(L.L.SndExt_RadioPlaylist) 1 - (S.L.SndExt_RadioPlaylist)
+{end}
+
+{trigger:KR_FF}
+	(L.L.SndExt_RadioPlaylist) 1 + (S.L.SndExt_RadioPlaylist)
+{end}
+
+{macro:Radio_frame}
+	(L.L.KR_Power)
 	{if}
-' Power off
-		0 (S.L.SndExt_Radio)
+		(L.L.KR_Channel) (S.L.SndExt_Radio)
 	{else}
-' Set to last selected channel
-		(L.L.KR_channel) 1 max (S.L.SndExt_Radio)
+		0 (S.L.SndExt_Radio)
 	{endif}
 {end}
