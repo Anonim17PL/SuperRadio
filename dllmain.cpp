@@ -119,7 +119,10 @@ void parsePlaylist(string data) {
 	size_t pos = 0;
 	size_t len = data.length();
 	while (pos < len) {
-		size_t fnLength = data.find('\n', pos) - pos;
+		size_t fnLength = data.find('\n', pos);
+		if (fnLength == string::npos)
+			fnLength = data.length();
+		fnLength -= pos;
 		char* filename = new char[fnLength + 1]{ 0 };
 		memcpy(filename, data.substr(pos, fnLength).c_str(), fnLength);
 		size_t commPos = strchr(filename, '#') - filename;
